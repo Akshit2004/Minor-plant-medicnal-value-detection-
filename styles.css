@@ -35,6 +35,32 @@ body {
     transform: translateY(-5px);
 }
 
+/* Add these new styles */
+.mobile-signup {
+    display: none;
+    text-align: center;
+    margin-top: 20px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+}
+
+.mobile-signup a {
+    color: #FF6B6B;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.mobile-signup a:hover {
+    color: #4ECDC4;
+}
+
+@media (max-width: 768px) {
+    .mobile-signup {
+        display: block;
+    }
+}
+
 .image-section {
     flex: 1;
     position: relative;
