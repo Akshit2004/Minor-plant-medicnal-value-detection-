@@ -100,17 +100,48 @@ document.addEventListener('DOMContentLoaded', function() {
         // Social login handlers
         const socialBtns = document.querySelectorAll('.social-btn');
         socialBtns.forEach(btn => {
-            btn.addEventListener('click', async () => {
-                const provider = btn.classList.contains('google') ? googleProvider : githubProvider;
+            btn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                const isGoogle = btn.classList.contains('google');
+                const provider = isGoogle ? new GoogleAuthProvider() : new GithubAuthProvider();
+                
+                // Add scopes for Google
+                if (isGoogle) {
+                    provider.addScope('https://www.googleapis.com/auth/userinfo.email');
+                    provider.addScope('https://www.googleapis.com/auth/userinfo.profile');
+                }
+
                 showLoading(btn);
+                
                 try {
+                    const auth = getAuth();
                     const result = await signInWithPopup(auth, provider);
-                    console.log('Social sign in:', result.user);
-                    localStorage.setItem('user', JSON.stringify(result.user));
+                    
+                    // Get credentials
+                    const credential = isGoogle ? 
+                        GoogleAuthProvider.credentialFromResult(result) : 
+                        GithubAuthProvider.credentialFromResult(result);
+                        
+                    const token = credential?.accessToken;
+                    const user = result.user;
+                    
+                    console.log('Social sign in successful:', user);
+                    localStorage.setItem('user', JSON.stringify(user));
                     window.location.href = 'dashboard.html';
+                    
                 } catch (error) {
-                    console.error('Error:', error);
-                    alert(errorMessages[error.code] || error.message);
+                    console.error('Social sign in error:', error);
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    const email = error.customData?.email;
+                    const credential = isGoogle ?
+                        GoogleAuthProvider.credentialFromError(error) :
+                        GithubAuthProvider.credentialFromError(error);
+                        
+                    let message = errorMessages[errorCode] || errorMessage;
+                    alert(message);
+                    
+                } finally {
                     hideLoading(btn);
                 }
             });
