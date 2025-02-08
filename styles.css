@@ -7,18 +7,26 @@ body {
     background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
     margin: 0;
     padding: 20px;
+    box-sizing: border-box;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 .container {
     display: flex;
     width: 900px;
-    max-width: 90%;
-    height: 600px;
+    max-width: 95%;
+    min-height: 550px;
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     border-radius: 20px;
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
     border: 1px solid rgba(255, 255, 255, 0.18);
+    overflow: hidden;
     transform: translateY(0);
     transition: transform 0.3s ease;
 }
@@ -28,8 +36,9 @@ body {
 }
 
 .image-section {
+    flex: 1;
     position: relative;
-    width: 50%;
+    background: rgba(0, 0, 0, 0.2);
     overflow: hidden;
 }
 
@@ -70,11 +79,12 @@ body {
 }
 
 .form-section {
-    width: 50%;
+    flex: 1;
     padding: 40px;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    gap: 20px;
 }
 
 h2 {
@@ -102,13 +112,13 @@ label {
 
 input {
     width: 100%;
-    padding: 15px;
-    border: 2px solid rgba(255,255,255,0.2);
+    padding: 12px 15px;
     background: rgba(255,255,255,0.1);
-    border-radius: 10px;
+    border: 2px solid rgba(255,255,255,0.2);
+    border-radius: 8px;
     color: white;
     font-size: 16px;
-    transition: 0.3s ease all;
+    transition: all 0.3s ease;
 }
 
 input:focus {
@@ -129,12 +139,11 @@ input:not(:placeholder-shown) + label {
 
 .btn {
     width: 100%;
-    padding: 15px;
-    border: none;
-    border-radius: 10px;
+    padding: 12px;
     background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+    border: none;
+    border-radius: 8px;
     color: white;
-    font-size: 16px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -180,7 +189,9 @@ input:not(:placeholder-shown) + label {
 @media (max-width: 768px) {
     .container {
         flex-direction: column;
+        min-height: auto;
         height: auto;
+        margin: 20px auto;
     }
     
     .image-section,
@@ -190,16 +201,102 @@ input:not(:placeholder-shown) + label {
     
     .image-section {
         height: 200px;
+        border-radius: 20px 20px 0 0;
+    }
+
+    .form-section {
+        padding: 30px 20px;
+    }
+
+    .social-buttons {
+        flex-direction: column;
+    }
+
+    .social-btn {
+        padding: 12px;
+        font-size: 16px;
     }
 }
 
 @media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+
     .container {
-        padding: 20px;
+        margin: 0;
+        border-radius: 10px;
+        padding: 15px;
+        margin: 10px auto;
     }
     
     h2 {
         font-size: 1.5em;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    input, .btn {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    label {
+        font-size: 14px;
+    }
+
+    .error-message {
+        font-size: 11px;
+        bottom: -18px;
+    }
+
+    .switch-btn {
+        padding: 8px 20px;
+        font-size: 14px;
+    }
+
+    .divider span {
+        font-size: 11px;
+    }
+
+    .form-section {
+        padding: 20px;
+    }
+
+    .signin-link {
+        margin-top: 15px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .container {
+        width: 95%;
+        max-width: 800px;
+    }
+}
+
+@media (max-height: 600px) {
+    .container {
+        margin: 10px auto;
+    }
+
+    .image-section {
+        height: 150px;
+    }
+}
+
+/* Add touch-friendly styles for mobile */
+@media (hover: none) {
+    .btn, .social-btn, .switch-btn {
+        min-height: 44px;
+    }
+
+    input {
+        min-height: 44px;
     }
 }
 
@@ -294,4 +391,22 @@ input:not(:placeholder-shown) + label {
 /* Add focus ring animation */
 .form-group input:focus {
     box-shadow: 0 0 0 2px rgba(78, 205, 196, 0.2);
+}
+
+.signin-link {
+    text-align: center;
+    margin-top: 20px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.signin-link a {
+    color: #FF6B6B;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.signin-link a:hover {
+    color: #4ECDC4;
+    text-decoration: underline;
 }
