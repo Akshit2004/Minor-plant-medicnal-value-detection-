@@ -1,3 +1,6 @@
+import { auth, googleProvider, githubProvider } from './firebase-config.js';
+import { signInWithPopup } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-auth.js";
+
 document.addEventListener('DOMContentLoaded', function() {
     // Form validation patterns
     const patterns = {
@@ -102,45 +105,17 @@ document.addEventListener('DOMContentLoaded', function() {
         socialBtns.forEach(btn => {
             btn.addEventListener('click', async (e) => {
                 e.preventDefault();
-                const isGoogle = btn.classList.contains('google');
-                const provider = isGoogle ? new GoogleAuthProvider() : new GithubAuthProvider();
-                
-                // Add scopes for Google
-                if (isGoogle) {
-                    provider.addScope('https://www.googleapis.com/auth/userinfo.email');
-                    provider.addScope('https://www.googleapis.com/auth/userinfo.profile');
-                }
-
-                showLoading(btn);
+                const provider = btn.classList.contains('google') ? googleProvider : githubProvider;
                 
                 try {
-                    const auth = getAuth();
+                    showLoading(btn);
                     const result = await signInWithPopup(auth, provider);
-                    
-                    // Get credentials
-                    const credential = isGoogle ? 
-                        GoogleAuthProvider.credentialFromResult(result) : 
-                        GithubAuthProvider.credentialFromResult(result);
-                        
-                    const token = credential?.accessToken;
-                    const user = result.user;
-                    
-                    console.log('Social sign in successful:', user);
-                    localStorage.setItem('user', JSON.stringify(user));
+                    console.log('Social sign in successful:', result.user);
+                    localStorage.setItem('user', JSON.stringify(result.user));
                     window.location.href = 'dashboard.html';
-                    
                 } catch (error) {
                     console.error('Social sign in error:', error);
-                    const errorCode = error.code;
-                    const errorMessage = error.message;
-                    const email = error.customData?.email;
-                    const credential = isGoogle ?
-                        GoogleAuthProvider.credentialFromError(error) :
-                        GithubAuthProvider.credentialFromError(error);
-                        
-                    let message = errorMessages[errorCode] || errorMessage;
-                    alert(message);
-                    
+                    alert(errorMessages[error.code] || error.message);
                 } finally {
                     hideLoading(btn);
                 }
