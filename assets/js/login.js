@@ -1,7 +1,99 @@
+// Split the code into two parts - module imports and DOM manipulation
 import { auth, googleProvider, githubProvider } from './firebase-config.js';
-import { signInWithPopup } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-auth.js";
+import { signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-auth.js";
 
+// DOM content loaded event
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM content loaded');
+    
+    // Slide functionality - simplified approach
+    const slideButtons = document.querySelectorAll('.slide-button');
+    const slidesContainer = document.querySelector('.slides');
+    
+    console.log('Slide buttons found:', slideButtons.length);
+    
+    // Add click event listeners to slide buttons
+    slideButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            console.log('Button clicked');
+            e.preventDefault(); // Prevent default behavior
+            
+            const targetSlide = button.getAttribute('data-target');
+            console.log('Target slide:', targetSlide);
+            
+            // Toggle slide animation by adding/removing class
+            if (targetSlide === 'signup') {
+                slidesContainer.classList.add('signup-active');
+            } else {
+                slidesContainer.classList.remove('signup-active');
+            }
+            
+            // Add animation for content elements
+            const currentSlide = targetSlide === 'signin' ? 'signup' : 'signin';
+            const enteringElements = document.querySelectorAll(`.slide-${targetSlide} .form-group, .slide-${targetSlide} h2, .slide-${targetSlide} .subtitle, .slide-${targetSlide} .btn`);
+            
+            // Create entrance animation for the new slide's elements
+            enteringElements.forEach((el, index) => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                }, 300 + (index * 100));
+            });
+            
+            // Reset forms
+            if (document.getElementById('signInForm')) {
+                document.getElementById('signInForm').reset();
+            }
+            
+            if (document.getElementById('signUpForm')) {
+                document.getElementById('signUpForm').reset();
+            }
+            
+            // Clear any error messages
+            document.querySelectorAll('.error-message').forEach(el => {
+                el.textContent = '';
+            });
+            
+            // Remove error styling
+            document.querySelectorAll('input').forEach(input => {
+                input.classList.remove('error');
+            });
+        });
+    });
+    
+    // Simple animation helper function
+    function gsapSlideAnimation(targetSlide) {
+        const container = document.querySelector(`.slide-${targetSlide} .container`);
+        const formSection = container.querySelector('.form-section');
+        const imageSection = container.querySelector('.image-section');
+        const formElements = formSection.querySelectorAll('h2, .subtitle, .form-group, .btn');
+        
+        // Apply subtle animations
+        fadeInElement(formSection, 0.3);
+        
+        formElements.forEach((el, index) => {
+            fadeInElement(el, 0.3 + (index * 0.1));
+        });
+        
+        fadeInElement(imageSection, 0.3);
+    }
+    
+    // Simple fade-in animation
+    function fadeInElement(element, delay) {
+        element.style.opacity = '0';
+        element.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            element.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            element.style.opacity = '1';
+            element.style.transform = 'translateY(0)';
+        }, delay * 1000);
+    }
+    
     // Form validation patterns
     const patterns = {
         email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
@@ -128,31 +220,29 @@ document.addEventListener('DOMContentLoaded', function() {
     if (user && window.location.pathname.includes('index.html')) {
         window.location.href = 'dashboard.html';
     }
+
+    // Helper functions
+    function showLoading(button) {
+        button.classList.add('loading');
+    }
+
+    function hideLoading(button) {
+        button.classList.remove('loading');
+    }
+
+    function showError(input, message) {
+        const errorElement = input.parentElement.querySelector('.error-message');
+        errorElement.textContent = message;
+        input.classList.add('error');
+    }
+
+    function clearError(input) {
+        const errorElement = input.parentElement.querySelector('.error-message');
+        errorElement.textContent = '';
+        input.classList.remove('error');
+    }
+
+    document.querySelectorAll('input').forEach(input => {
+        input.addEventListener('input', () => clearError(input));
+    });
 });
-
-// Add to your existing JavaScript
-function showLoading(button) {
-    button.classList.add('loading');
-}
-
-function hideLoading(button) {
-    button.classList.remove('loading');
-}
-
-function showError(input, message) {
-    const errorElement = input.parentElement.querySelector('.error-message');
-    errorElement.textContent = message;
-    input.classList.add('error');
-}
-
-function clearError(input) {
-    const errorElement = input.parentElement.querySelector('.error-message');
-    errorElement.textContent = '';
-    input.classList.remove('error');
-}
-
-document.querySelectorAll('input').forEach(input => {
-    input.addEventListener('input', () => clearError(input));
-});
-
-// Add form validation to your existing submit handlers

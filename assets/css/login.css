@@ -1,0 +1,713 @@
+/* ======================
+   Base & Global Styles
+====================== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+    background: url('assests/steptodown.com798785.jpg') no-repeat center center fixed;
+    background-size: cover;
+}
+
+/* Background overlay */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    z-index: -2;
+}
+
+/* ======================
+   Slide Animation (Fixed)
+====================== */
+.slider-container {
+    width: 100%;
+    max-width: 1100px;
+    overflow: hidden;
+}
+
+.card {
+    width: 100%;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    position: relative;
+    height: 600px;
+}
+
+.slides {
+    position: relative;
+    width: 100%; /* Changed from 200% to 100% */
+    height: 100%;
+}
+
+.slide {
+    position: absolute; /* Changed from relative to absolute */
+    width: 100%; /* Changed from 50% to 100% */
+    height: 100%;
+    transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1), opacity 0.7s ease;
+}
+
+.slide-signin {
+    transform: translateX(0);
+    opacity: 1;
+    z-index: 2;
+}
+
+.slide-signup {
+    transform: translateX(100%);
+    opacity: 0;
+    z-index: 1;
+}
+
+/* Overlapping animation states */
+.slides.signup-active .slide-signin {
+    transform: translateX(-100%);
+    opacity: 0;
+    z-index: 1;
+}
+
+.slides.signup-active .slide-signup {
+    transform: translateX(0);
+    opacity: 1;
+    z-index: 2;
+}
+
+/* Container and sections for overlapping effect */
+.container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+/* Reversed container for signup - image on left, form on right */
+.container.reversed {
+    flex-direction: row-reverse;
+}
+
+/* Form and Image sections for overlap effect */
+.form-section, 
+.image-section {
+    position: relative;
+    transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* Image section animation for signin slide during transition */
+.slides.signup-active .slide-signin .image-section {
+    transform: translateX(-40%);
+}
+
+/* Form section animation for signin slide during transition */
+.slides.signup-active .slide-signin .form-section {
+    transform: translateX(40%);
+}
+
+/* Image section animation for signup slide during transition */
+.slide-signup .image-section {
+    transform: translateX(40%);
+    transition-delay: 0.1s;
+}
+
+/* Form section animation for signup slide during transition */
+.slide-signup .form-section {
+    transform: translateX(-40%);
+    transition-delay: 0.1s;
+}
+
+/* Reset transforms when active */
+.slides.signup-active .slide-signup .image-section,
+.slides.signup-active .slide-signup .form-section {
+    transform: translateX(0);
+}
+
+/* ======================
+   Background Animation
+====================== */
+.background-shapes {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.shape {
+    position: absolute;
+    background: linear-gradient(45deg, rgba(44, 122, 81, 0.1), rgba(78, 205, 196, 0.1));
+    border-radius: 50%;
+    animation: float 20s linear infinite;
+}
+
+.shape:nth-child(1) {
+    width: 200px;
+    height: 200px;
+    top: 10%;
+    left: 10%;
+    animation-duration: 25s;
+}
+
+.shape:nth-child(2) {
+    width: 300px;
+    height: 300px;
+    top: 60%;
+    left: 70%;
+    animation-duration: 30s;
+}
+
+.shape:nth-child(3) {
+    width: 150px;
+    height: 150px;
+    top: 30%;
+    left: 80%;
+    animation-duration: 20s;
+}
+
+.shape:nth-child(4) {
+    width: 250px;
+    height: 250px;
+    top: 70%;
+    left: 20%;
+    animation-duration: 22s;
+}
+
+@keyframes float {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    50% { transform: translate(100px, 100px) rotate(180deg); }
+    100% { transform: translate(0, 0) rotate(360deg); }
+}
+
+/* ======================
+   Container Styles
+====================== */
+.container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 
+        0 8px 32px 0 rgba(31, 38, 135, 0.37),
+        inset 0 0 80px rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+/* Reversed container for signup - image on left, form on right */
+.container.reversed {
+    flex-direction: row-reverse;
+}
+
+/* Remove hover effect from container as it interferes with flip */
+/* .container:hover {
+    transform: translateY(-5px);
+} */
+
+/* ======================
+   Image & Form Section Styles (Reversed)
+====================== */
+/* Form section comes first */
+.form-section {
+    flex: 0.8;
+    padding: 50px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(5px);
+}
+
+/* Image section comes second */
+.image-section {
+    flex: 1.2;
+    position: relative;
+    background: #2c7a51;
+    overflow: hidden;
+    transition: all 0.5s ease;
+}
+
+.image-section:hover .leaf-pattern {
+    transform: scale(1.05);
+}
+
+.leaf-pattern {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('https://img.freepik.com/free-vector/tropical-foliage-log-landing-page_23-2148537424.jpg') center/cover;
+    opacity: 0.8;
+    transition: transform 0.8s ease;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(44, 122, 81, 0.7);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+
+.overlay h3 {
+    font-size: 2.2em;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.overlay p {
+    font-size: 1.1em;
+    margin-bottom: 25px;
+    opacity: 0.9;
+}
+
+/* Add a subtle animation to the switch button */
+.switch-btn {
+    padding: 12px 35px;
+    border: 2px solid white;
+    border-radius: 30px;
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.switch-btn:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(255,255,255,0.3),
+        transparent
+    );
+    transition: 0.5s;
+    z-index: -1;
+}
+
+.switch-btn:hover:before {
+    left: 100%;
+}
+
+.switch-btn:hover {
+    background: white;
+    color: #2c7a51;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* ======================
+   Form Section Styles
+====================== */
+h2 {
+    color: #2c7a51;
+    margin-bottom: 10px;
+    font-size: 2em;
+}
+
+.subtitle {
+    color: #666;
+    margin-bottom: 30px;
+}
+
+/* Form group and input styles */
+.form-group {
+    position: relative;
+    margin-bottom: 25px;
+}
+
+label {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+    pointer-events: none;
+    transition: 0.3s ease all;
+}
+
+input {
+    width: 100%;
+    padding: 12px 15px;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    color: #495057;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+input:focus {
+    outline: none;
+    border-color: #2c7a51;
+    background: white;
+}
+
+input:focus + label,
+input:not(:placeholder-shown) + label {
+    top: -10px;
+    left: 5px;
+    font-size: 12px;
+    background: #2c7a51;
+    color: white;
+    padding: 0 5px;
+    border-radius: 5px;
+}
+
+.form-group:hover input {
+    border-color: rgba(44, 122, 81, 0.3);
+}
+
+.form-group input:focus {
+    box-shadow: 0 0 0 2px rgba(44, 122, 81, 0.2);
+}
+
+/* Error message styling */
+.error-message {
+    position: absolute;
+    bottom: -20px;
+    left: 0;
+    font-size: 12px;
+    color: #ff4444;
+}
+
+/* ======================
+   Button Styles
+====================== */
+.btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #2c7a51, #235f3f);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(255,255,255,0.3),
+        transparent
+    );
+    transition: 0.5s;
+}
+
+.btn:hover:before {
+    left: 100%;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    background: #235f3f;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+/* ======================
+   Loading and Animation
+====================== */
+.loader {
+    display: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.btn.loading .btn-text {
+    display: none;
+}
+
+.btn.loading .loader {
+    display: block;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+
+.shake {
+    animation: shake 0.5s;
+}
+
+/* ======================
+   Additional Elements
+====================== */
+.mobile-signup {
+    display: none;
+    text-align: center;
+    margin-top: 20px;
+    color: #666;
+    font-size: 14px;
+}
+
+.mobile-signup a {
+    color: #2c7a51;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.mobile-signup a:hover {
+    color: #235f3f;
+}
+
+.signin-link {
+    text-align: center;
+    margin-top: 20px;
+    color: #666;
+}
+
+.signin-link a {
+    color: #2c7a51;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.signin-link a:hover {
+    color: #235f3f;
+    text-decoration: underline;
+}
+
+/* ======================
+   Responsive Styles
+====================== */
+/* Tablet */
+@media (max-width: 1024px) {
+    .container {
+        width: 95%;
+        max-width: 800px;
+    }
+    .flip-container {
+        width: 95%;
+        max-width: 800px;
+    }
+    .slider-container {
+        width: 95%;
+    }
+    
+    .slides {
+        height: 550px;
+    }
+}
+
+/* Small tablets */
+@media (max-width: 768px) {
+    .flip-container {
+        height: auto;
+    }
+    
+    .card, .card-side {
+        height: auto;
+    }
+    
+    .container {
+        flex-direction: column-reverse; /* Image on top, form below */
+        min-height: auto;
+        height: auto;
+        margin: 20px auto;
+    }
+    
+    .container.reversed {
+        flex-direction: column-reverse; /* Both layouts keep image on top on mobile */
+    }
+    
+    .image-section,
+    .form-section {
+        width: 100%;
+    }
+    
+    .image-section {
+        height: 200px;
+        border-radius: 20px 20px 0 0;
+    }
+
+    .form-section {
+        padding: 30px 20px;
+    }
+    
+    .mobile-signup {
+        display: block;
+    }
+    
+    /* Fix for mobile flip animation */
+    .card.flipped {
+        margin-bottom: 30px; /* Add space at bottom when flipped */
+    }
+    
+    .back {
+        position: absolute;
+        top: 0;
+    }
+    
+    .slides {
+        height: auto;
+    }
+    
+    .slide {
+        position: relative;
+        height: auto;
+    }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+
+    .flip-container {
+        height: auto;
+    }
+    
+    .container {
+        margin: 10px auto;
+        border-radius: 10px;
+        padding: 15px;
+    }
+    
+    h2 {
+        font-size: 1.5em;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    input, .btn {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    label {
+        font-size: 14px;
+    }
+
+    .error-message {
+        font-size: 11px;
+        bottom: -18px;
+    }
+
+    .switch-btn {
+        padding: 8px 20px;
+        font-size: 14px;
+    }
+
+    .form-section {
+        padding: 20px;
+    }
+
+    .signin-link {
+        margin-top: 15px;
+        font-size: 14px;
+    }
+}
+
+/* Short height */
+@media (max-height: 600px) {
+    .container {
+        margin: 10px auto;
+    }
+
+    .image-section {
+        height: 150px;
+    }
+}
+
+/* Touch devices */
+@media (hover: none) {
+    .btn, .switch-btn {
+        min-height: 44px;
+    }
+
+    input {
+        min-height: 44px;
+    }
+}
+
+/* Fix for iOS Safari */
+@media not all and (min-resolution:.001dpcm) { 
+    @supports (-webkit-appearance:none) {
+        .flip-container {
+            -webkit-perspective: 2000px;
+        }
+        
+        .card {
+            -webkit-transform-style: preserve-3d;
+        }
+        
+        .back {
+            -webkit-backface-visibility: hidden;
+        }
+    }
+}
