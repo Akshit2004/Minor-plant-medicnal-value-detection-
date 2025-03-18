@@ -18,7 +18,7 @@ body {
     box-sizing: border-box;
     position: relative;
     overflow: hidden;
-    background: url('assests/steptodown.com798785.jpg') no-repeat center center fixed;
+    background: url('../img/loginbg.jpg') no-repeat center center fixed;
     background-size: cover;
 }
 
@@ -37,15 +37,14 @@ body::before {
 }
 
 /* ======================
-   Slide Animation (Fixed)
+   Auth Container Styles
 ====================== */
-.slider-container {
+.auth-container {
     width: 100%;
     max-width: 1100px;
-    overflow: hidden;
 }
 
-.card {
+.auth-form {
     width: 100%;
     border-radius: 20px;
     overflow: hidden;
@@ -54,95 +53,8 @@ body::before {
     height: 600px;
 }
 
-.slides {
-    position: relative;
-    width: 100%; /* Changed from 200% to 100% */
-    height: 100%;
-}
-
-.slide {
-    position: absolute; /* Changed from relative to absolute */
-    width: 100%; /* Changed from 50% to 100% */
-    height: 100%;
-    transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1), opacity 0.7s ease;
-}
-
-.slide-signin {
-    transform: translateX(0);
-    opacity: 1;
-    z-index: 2;
-}
-
-.slide-signup {
-    transform: translateX(100%);
-    opacity: 0;
-    z-index: 1;
-}
-
-/* Overlapping animation states */
-.slides.signup-active .slide-signin {
-    transform: translateX(-100%);
-    opacity: 0;
-    z-index: 1;
-}
-
-.slides.signup-active .slide-signup {
-    transform: translateX(0);
-    opacity: 1;
-    z-index: 2;
-}
-
-/* Container and sections for overlapping effect */
-.container {
-    display: flex;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.5);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-    border-radius: 20px;
-    overflow: hidden;
-}
-
-/* Reversed container for signup - image on left, form on right */
-.container.reversed {
-    flex-direction: row-reverse;
-}
-
-/* Form and Image sections for overlap effect */
-.form-section, 
-.image-section {
-    position: relative;
-    transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1);
-}
-
-/* Image section animation for signin slide during transition */
-.slides.signup-active .slide-signin .image-section {
-    transform: translateX(-40%);
-}
-
-/* Form section animation for signin slide during transition */
-.slides.signup-active .slide-signin .form-section {
-    transform: translateX(40%);
-}
-
-/* Image section animation for signup slide during transition */
-.slide-signup .image-section {
-    transform: translateX(40%);
-    transition-delay: 0.1s;
-}
-
-/* Form section animation for signup slide during transition */
-.slide-signup .form-section {
-    transform: translateX(-40%);
-    transition-delay: 0.1s;
-}
-
-/* Reset transforms when active */
-.slides.signup-active .slide-signup .image-section,
-.slides.signup-active .slide-signup .form-section {
-    transform: translateX(0);
+.hidden {
+    display: none;
 }
 
 /* ======================
@@ -225,11 +137,6 @@ body::before {
     flex-direction: row-reverse;
 }
 
-/* Remove hover effect from container as it interferes with flip */
-/* .container:hover {
-    transform: translateY(-5px);
-} */
-
 /* ======================
    Image & Form Section Styles (Reversed)
 ====================== */
@@ -310,6 +217,8 @@ body::before {
     position: relative;
     overflow: hidden;
     z-index: 1;
+    cursor: pointer;
+    outline: none;
 }
 
 .switch-btn:before {
@@ -338,6 +247,11 @@ body::before {
     color: #2c7a51;
     transform: translateY(-3px);
     box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.switch-btn:active {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
 
 /* ======================
@@ -463,6 +377,22 @@ input:not(:placeholder-shown) + label {
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
 
+/* Text button style for mobile toggle */
+.text-btn {
+    background: none;
+    border: none;
+    color: #2c7a51;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+    transition: color 0.3s ease;
+}
+
+.text-btn:hover {
+    color: #235f3f;
+    text-decoration: underline;
+}
+
 /* ======================
    Loading and Animation
 ====================== */
@@ -501,41 +431,11 @@ input:not(:placeholder-shown) + label {
 /* ======================
    Additional Elements
 ====================== */
-.mobile-signup {
-    display: none;
+.toggle-form {
     text-align: center;
     margin-top: 20px;
     color: #666;
     font-size: 14px;
-}
-
-.mobile-signup a {
-    color: #2c7a51;
-    text-decoration: none;
-    font-weight: 600;
-    transition: color 0.3s ease;
-}
-
-.mobile-signup a:hover {
-    color: #235f3f;
-}
-
-.signin-link {
-    text-align: center;
-    margin-top: 20px;
-    color: #666;
-}
-
-.signin-link a {
-    color: #2c7a51;
-    text-decoration: none;
-    font-weight: 600;
-    transition: color 0.3s ease;
-}
-
-.signin-link a:hover {
-    color: #235f3f;
-    text-decoration: underline;
 }
 
 /* ======================
@@ -547,26 +447,16 @@ input:not(:placeholder-shown) + label {
         width: 95%;
         max-width: 800px;
     }
-    .flip-container {
+    .auth-form {
         width: 95%;
         max-width: 800px;
-    }
-    .slider-container {
-        width: 95%;
-    }
-    
-    .slides {
         height: 550px;
     }
 }
 
 /* Small tablets */
 @media (max-width: 768px) {
-    .flip-container {
-        height: auto;
-    }
-    
-    .card, .card-side {
+    .auth-form {
         height: auto;
     }
     
@@ -594,39 +484,12 @@ input:not(:placeholder-shown) + label {
     .form-section {
         padding: 30px 20px;
     }
-    
-    .mobile-signup {
-        display: block;
-    }
-    
-    /* Fix for mobile flip animation */
-    .card.flipped {
-        margin-bottom: 30px; /* Add space at bottom when flipped */
-    }
-    
-    .back {
-        position: absolute;
-        top: 0;
-    }
-    
-    .slides {
-        height: auto;
-    }
-    
-    .slide {
-        position: relative;
-        height: auto;
-    }
 }
 
 /* Mobile */
 @media (max-width: 480px) {
     body {
         padding: 10px;
-    }
-
-    .flip-container {
-        height: auto;
     }
     
     .container {
@@ -666,11 +529,6 @@ input:not(:placeholder-shown) + label {
     .form-section {
         padding: 20px;
     }
-
-    .signin-link {
-        margin-top: 15px;
-        font-size: 14px;
-    }
 }
 
 /* Short height */
@@ -692,22 +550,5 @@ input:not(:placeholder-shown) + label {
 
     input {
         min-height: 44px;
-    }
-}
-
-/* Fix for iOS Safari */
-@media not all and (min-resolution:.001dpcm) { 
-    @supports (-webkit-appearance:none) {
-        .flip-container {
-            -webkit-perspective: 2000px;
-        }
-        
-        .card {
-            -webkit-transform-style: preserve-3d;
-        }
-        
-        .back {
-            -webkit-backface-visibility: hidden;
-        }
     }
 }
