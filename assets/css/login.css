@@ -9,39 +9,6 @@
     font-family: 'Poppins', sans-serif;
 }
 
-/* ===== LOADING OVERLAY ===== */
-.loading-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #f0f7f0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    transition: opacity 0.3s ease-out; /* Faster transition */
-}
-
-.loading-overlay.hidden {
-    opacity: 0;
-    pointer-events: none;
-}
-
-.loading-spinner {
-    width: 50px;
-    height: 50px;
-    border: 5px solid rgba(80, 200, 120, 0.3); /* Updated to match emerald green */
-    border-radius: 50%;
-    border-top-color: #50C878; /* Changed to emerald green */
-    animation: spin 0.8s linear infinite; /* Slightly faster spin */
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
 /* ===== PAGE VISIBILITY ===== */
 .page-loaded .sign-up-form {
     opacity: 0;
@@ -103,6 +70,12 @@ body {
     background-size: cover;
     background-position: center;
     z-index: -2;
+    animation: subtleZoom 15s infinite alternate;
+}
+
+@keyframes subtleZoom {
+    from { transform: scale(1); }
+    to { transform: scale(1.05); }
 }
 
 .bg-overlay {
@@ -166,15 +139,34 @@ form {
     font-size: 2.2rem;
     color: #444;
     margin-bottom: 10px;
+    position: relative;
+}
+
+.title:after {
+    content: '';
+    position: absolute;
+    width: 0%;
+    height: 3px;
+    bottom: -5px;
+    left: 50%;
+    background: #50C878;
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+}
+
+form:hover .title:after {
+    width: 50%;
 }
 
 form.sign-in-form {
     z-index: 2;
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
 }
 
 form.sign-up-form {
     z-index: 1;
     opacity: 0;
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
 }
 
 /* ===== INPUT FIELD STYLES ===== */
@@ -189,6 +181,12 @@ form.sign-up-form {
     grid-template-columns: 15% 85%;
     padding: 0 0.4rem;
     box-sizing: border-box; /* Ensure padding is included in width calculation */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.input-field:focus-within {
+    transform: scale(1.02);
+    box-shadow: 0 0 8px rgba(80, 200, 120, 0.5);
 }
 
 .input-field i {
@@ -211,6 +209,12 @@ form.sign-up-form {
 .input-field input::placeholder {
     color: #aaa;
     font-weight: 500;
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+.input-field input:focus::placeholder {
+    opacity: 0;
+    transform: translateX(10px);
 }
 
 /* ===== ERROR FIELD STYLES ===== */
@@ -223,6 +227,18 @@ form.sign-up-form {
     max-width: 380px;
     text-align: left;
     margin-bottom: 5px;
+    animation: fadeInUp 0.4s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* ===== BUTTON STYLES ===== */
@@ -239,6 +255,30 @@ form.sign-up-form {
     font-weight: 600;
     margin: 10px 0;
     transition: all 0.5s;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.btn:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.7s;
+    z-index: -1;
+}
+
+.btn:hover:before {
+    left: 100%;
+}
+
+.btn:active {
+    transform: scale(0.95);
+    transition: transform 0.1s;
 }
 
 .btn:hover {
@@ -269,11 +309,22 @@ form.sign-up-form {
     font-size: 1.1rem;
     border-radius: 50%;
     transition: all 0.5s;
+    transition: all 0.3s ease, transform 0.3s ease;
 }
 
 .social-icon:hover {
     color: #50C878; /* Updated to emerald green */
     border-color: #50C878;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.social-icon i {
+    transition: transform 0.3s ease;
+}
+
+.social-icon:hover i {
+    transform: scale(1.2);
 }
 
 /* ===== PANELS CONTAINER STYLES ===== */
@@ -310,6 +361,12 @@ form.sign-up-form {
 .panel .content {
     color: white;
     transition: 0.9s 0.6s ease-in-out;
+    animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 .panel h3 {
@@ -366,11 +423,15 @@ form.sign-up-form {
 .container.sign-up-mode form.sign-in-form {
     z-index: 1;
     opacity: 0;
+    transform: translateX(-20px);
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
 }
 
 .container.sign-up-mode form.sign-up-form {
     z-index: 2;
     opacity: 1;
+    transform: translateX(0);
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
 }
 
 .container.sign-up-mode .right-panel .content {
@@ -478,6 +539,15 @@ form.sign-up-form {
     form {
         padding: 0 1rem; /* Reduce padding on forms for smaller screens */
     }
+
+    /* Adjust animations for mobile */
+    .btn:before {
+        display: none; /* Disable shine effect on mobile */
+    }
+    
+    .bg-image {
+        animation: none; /* Disable background animation on mobile for better performance */
+    }
 }
 
 /* ===== SMALL SCREEN RESPONSIVENESS ===== */
@@ -549,5 +619,193 @@ form.sign-up-form {
         width: 120px;
         height: 40px;
         font-size: 0.7rem;
+    }
+}
+
+/* ===== ENHANCED ANIMATIONS ===== */
+
+/* Input field animations */
+.input-field {
+    /* ...existing code... */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.input-field:focus-within {
+    transform: scale(1.02);
+    box-shadow: 0 0 8px rgba(80, 200, 120, 0.5);
+}
+
+.input-field input:focus::placeholder {
+    opacity: 0;
+    transform: translateX(10px);
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+/* Button animations */
+.btn {
+    /* ...existing code... */
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.btn:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.7s;
+    z-index: -1;
+}
+
+.btn:hover:before {
+    left: 100%;
+}
+
+.btn:active {
+    transform: scale(0.95);
+    transition: transform 0.1s;
+}
+
+/* Form transitions enhancement */
+.sign-in-form, .sign-up-form {
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
+
+.container.sign-up-mode form.sign-in-form {
+    transform: translateX(-20px);
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
+
+.container.sign-up-mode form.sign-up-form {
+    transform: translateX(0);
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
+
+/* Title animation */
+.title {
+    /* ...existing code... */
+    position: relative;
+}
+
+.title:after {
+    content: '';
+    position: absolute;
+    width: 0%;
+    height: 3px;
+    bottom: -5px;
+    left: 50%;
+    background: #50C878;
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+}
+
+form:hover .title:after {
+    width: 50%;
+}
+
+/* Social media icon animations */
+.social-icon {
+    /* ...existing code... */
+    transition: all 0.3s ease, transform 0.3s ease;
+}
+
+.social-icon:hover {
+    /* ...existing code... */
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.social-icon i {
+    transition: transform 0.3s ease;
+}
+
+.social-icon:hover i {
+    transform: scale(1.2);
+}
+
+/* Error message animations */
+.error-message {
+    /* ...existing code... */
+    animation: fadeInUp 0.4s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Loading animation enhancement */
+.loading-spinner {
+    /* ...existing code... */
+    box-shadow: 0 0 15px rgba(80, 200, 120, 0.5);
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    50% { transform: rotate(180deg) scale(1.2); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Subtle background animation */
+.bg-image {
+    /* ...existing code... */
+    animation: subtleZoom 15s infinite alternate;
+}
+
+@keyframes subtleZoom {
+    from { transform: scale(1); }
+    to { transform: scale(1.05); }
+}
+
+/* Panel Content Animation */
+.panel .content {
+    /* ...existing code... */
+    animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Success animation for form submission */
+@keyframes successPulse {
+    0% { box-shadow: 0 0 0 0 rgba(80, 200, 120, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(80, 200, 120, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(80, 200, 120, 0); }
+}
+
+.form-success .btn {
+    animation: successPulse 1.5s infinite;
+}
+
+/* Mobile responsiveness for animations */
+@media (max-width: 870px) {
+    /* ...existing media query code... */
+    
+    /* Adjust animations for mobile */
+    .btn:before {
+        display: none; /* Disable shine effect on mobile */
+    }
+    
+    .bg-image {
+        animation: none; /* Disable background animation on mobile for better performance */
+    }
+}
+
+/* Mobile responsiveness for loading text */
+@media (max-width: 480px) {
+    .loading-text {
+        font-size: 1rem;
     }
 }
