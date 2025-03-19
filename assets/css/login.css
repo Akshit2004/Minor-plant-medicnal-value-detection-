@@ -188,6 +188,7 @@ form.sign-up-form {
     display: grid;
     grid-template-columns: 15% 85%;
     padding: 0 0.4rem;
+    box-sizing: border-box; /* Ensure padding is included in width calculation */
 }
 
 .input-field i {
@@ -473,12 +474,20 @@ form.sign-up-form {
         transform: translate(-50%, 0);
         left: 50%;
     }
+
+    form {
+        padding: 0 1rem; /* Reduce padding on forms for smaller screens */
+    }
 }
 
 /* ===== SMALL SCREEN RESPONSIVENESS ===== */
 @media (max-width: 570px) {
     form {
-        padding: 0 1.5rem;
+        padding: 0 1rem;
+    }
+    
+    .input-field {
+        max-width: 100%; /* Make input fields take container width */
     }
     
     .panel .content {
@@ -507,7 +516,12 @@ form.sign-up-form {
     }
     
     .input-field {
-        max-width: 280px;
+        max-width: 100%; /* Ensure inputs fit the container width */
+        font-size: 0.9rem; /* Smaller font for very small screens */
+    }
+    
+    .input-field input {
+        font-size: 0.9rem; /* Adjust input font size for smaller screens */
     }
     
     .title {
@@ -518,5 +532,22 @@ form.sign-up-form {
         width: 130px;
         height: 43px;
         font-size: 0.8rem;
+    }
+}
+
+/* Add extra small device handling */
+@media (max-width: 320px) {
+    form {
+        padding: 0 0.8rem;
+    }
+    
+    .title {
+        font-size: 1.6rem;
+    }
+    
+    .btn {
+        width: 120px;
+        height: 40px;
+        font-size: 0.7rem;
     }
 }
