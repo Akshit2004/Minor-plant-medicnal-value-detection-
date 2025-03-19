@@ -1,200 +1,158 @@
-// Import statements
-import { auth, googleProvider, githubProvider } from '../../firebase-config.js';
-import { signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-auth.js";
+/**
+ * Plant Medicine Detection Login System
+ * Handles login/signup toggle functionality and form validation
+ */
 
-// DOM content loaded event
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM content loaded');
+    // ===== DOM ELEMENTS =====
+    const sign_in_btn = document.querySelector("#sign-in-btn");
+    const sign_up_btn = document.querySelector("#sign-up-btn");
+    const container = document.querySelector(".container");
+    const signInForm = document.querySelector(".sign-in-form");
+    const signUpForm = document.querySelector(".sign-up-form");
+    const loadingOverlay = document.querySelector(".loading-overlay");
     
-    const toggleButtons = document.querySelectorAll('.toggle-button');
-    const signinForm = document.getElementById('signin-form');
-    const signupForm = document.getElementById('signup-form');
+    // Handle page loading sequence - immediately start showing content
+    // Show content immediately when DOM is loaded
+    document.body.classList.add('page-loaded');
     
-    console.log('Toggle buttons found:', toggleButtons.length);
-    
-    // Toggle handler for forms
-    toggleButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            console.log('Button clicked:', this.textContent.trim());
-            
-            const targetForm = this.getAttribute('data-target');
-            console.log('Target form:', targetForm);
-            
-            // Toggle form visibility
-            if (targetForm === 'signup') {
-                signinForm.classList.add('hidden');
-                signupForm.classList.remove('hidden');
-            } else {
-                signinForm.classList.remove('hidden');
-                signupForm.classList.add('hidden');
-            }
-            
-            // Reset forms
-            document.getElementById('signInForm').reset();
-            document.getElementById('signUpForm').reset();
-            
-            // Clear any error messages
-            document.querySelectorAll('.error-message').forEach(el => {
-                el.textContent = '';
-            });
-            
-            // Remove error styling
-            document.querySelectorAll('input').forEach(input => {
-                input.classList.remove('error');
-            });
-        });
+    // Hide loading overlay as soon as window is loaded
+    window.addEventListener('load', function() {
+        loadingOverlay.classList.add('hidden');
     });
     
-    // Form validation patterns
-    const patterns = {
-        email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-        password: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/
-    };
+    // If the page takes too long to load, still hide the spinner after 1.5s
+    setTimeout(function() {
+        document.body.classList.add('page-loaded');
+        loadingOverlay.classList.add('hidden');
+    }, 1500);
 
-    // Common auth error messages
-    const errorMessages = {
-        'auth/email-already-in-use': 'This email is already registered',
-        'auth/invalid-email': 'Please enter a valid email address',
-        'auth/operation-not-allowed': 'Operation not allowed',
-        'auth/weak-password': 'Password should be at least 8 characters',
-        'auth/user-not-found': 'No account found with this email',
-        'auth/wrong-password': 'Incorrect password'
-    };
+    // ===== TOGGLE FUNCTIONALITY =====
+    /**
+     * Switch between sign-in and sign-up modes
+     */
+    sign_up_btn.addEventListener("click", () => {
+        container.classList.add("sign-up-mode");
+    });
 
-    function validateField(input, pattern) {
-        return pattern.test(input.value);
-    }
+    sign_in_btn.addEventListener("click", () => {
+        container.classList.remove("sign-up-mode");
+    });
 
-    function handleAuthError(error, input) {
-        const message = errorMessages[error.code] || error.message;
-        showError(input, message);
-        hideLoading(input.closest('form').querySelector('.btn'));
-    }
-
-    const signInForm = document.getElementById('signInForm');
-    if (signInForm) {
-        signInForm.addEventListener('submit', async function(event) {
-            event.preventDefault();
-            const email = document.getElementById('email');
-            const password = document.getElementById('password');
-            const submitBtn = this.querySelector('.btn');
-            
-            clearError(email);
-            clearError(password);
-
-            if (!validateField(email, patterns.email)) {
-                showError(email, 'Please enter a valid email');
-                return;
-            }
-
-            showLoading(submitBtn);
-            
-            try {
-                const userCredential = await signInWithEmailAndPassword(auth, email.value, password.value);
-                console.log('Signed in:', userCredential.user);
-                localStorage.setItem('user', JSON.stringify(userCredential.user));
-                window.location.href = 'dashboard.html';
-            } catch (error) {
-                handleAuthError(error, email);
-            }
-        });
-    }
-
-    const signUpForm = document.getElementById('signUpForm');
-    if (signUpForm) {
-        signUpForm.addEventListener('submit', async function(event) {
-            event.preventDefault();
-            const username = document.getElementById('username');
-            const email = document.getElementById('signup-email');
-            const password = document.getElementById('signup-password');
-            const submitBtn = this.querySelector('.btn');
-
-            clearError(username);
-            clearError(email);
-            clearError(password);
-
-            if (!username.value.trim()) {
-                showError(username, 'Username is required');
-                return;
-            }
-
-            if (!validateField(email, patterns.email)) {
-                showError(email, 'Please enter a valid email');
-                return;
-            }
-
-            if (!validateField(password, patterns.password)) {
-                showError(password, 'Password must be at least 8 characters with letters and numbers');
-                return;
-            }
-
-            showLoading(submitBtn);
-
-            try {
-                const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value);
-                await userCredential.user.updateProfile({
-                    displayName: username.value
-                });
-                console.log('Signed up:', userCredential.user);
-                localStorage.setItem('user', JSON.stringify(userCredential.user));
-                window.location.href = 'dashboard.html';
-            } catch (error) {
-                handleAuthError(error, email);
-            }
-        });
-
-        // Social login handlers
-        const socialBtns = document.querySelectorAll('.social-btn');
-        socialBtns.forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                e.preventDefault();
-                const provider = btn.classList.contains('google') ? googleProvider : githubProvider;
+    // ===== FORM VALIDATION =====
+    /**
+     * Validate form inputs before submission
+     * @param {HTMLFormElement} form - The form to validate
+     * @returns {boolean} - Whether the form is valid
+     */
+    function validateForm(form) {
+        let isValid = true;
+        const inputs = form.querySelectorAll('input[required]');
+        
+        inputs.forEach(input => {
+            if (!input.value.trim()) {
+                isValid = false;
+                showError(input, 'This field is required');
+            } else {
+                clearError(input);
                 
-                try {
-                    showLoading(btn);
-                    const result = await signInWithPopup(auth, provider);
-                    console.log('Social sign in successful:', result.user);
-                    localStorage.setItem('user', JSON.stringify(result.user));
-                    window.location.href = 'dashboard.html';
-                } catch (error) {
-                    console.error('Social sign in error:', error);
-                    alert(errorMessages[error.code] || error.message);
-                } finally {
-                    hideLoading(btn);
+                // Email validation for signup form
+                if (input.type === 'email' && !validateEmail(input.value)) {
+                    isValid = false;
+                    showError(input, 'Please enter a valid email');
                 }
-            });
+                
+                // Password validation (at least 6 characters)
+                if (input.type === 'password' && input.value.length < 6) {
+                    isValid = false;
+                    showError(input, 'Password must be at least 6 characters');
+                }
+            }
         });
+        
+        return isValid;
     }
-
-    // Check for existing session
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (user && window.location.pathname.includes('index.html')) {
-        window.location.href = 'dashboard.html';
+    
+    /**
+     * Validate email format using regex
+     * @param {string} email - Email to validate
+     * @returns {boolean} - Whether email is valid
+     */
+    function validateEmail(email) {
+        const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(String(email).toLowerCase());
     }
-
-    // Helper functions
-    function showLoading(button) {
-        button.classList.add('loading');
-    }
-
-    function hideLoading(button) {
-        button.classList.remove('loading');
-    }
-
+    
+    /**
+     * Show error message for an input field
+     * @param {HTMLElement} input - The input with error
+     * @param {string} message - Error message to display
+     */
     function showError(input, message) {
-        const errorElement = input.parentElement.querySelector('.error-message');
-        errorElement.textContent = message;
-        input.classList.add('error');
+        const parent = input.parentElement;
+        const errorDiv = document.createElement('div');
+        
+        // Remove existing error message if any
+        const existingError = parent.querySelector('.error-message');
+        if (existingError) {
+            parent.removeChild(existingError);
+        }
+        
+        // Add error class to input field
+        parent.classList.add('error');
+        
+        // Create and append error message
+        errorDiv.className = 'error-message';
+        errorDiv.textContent = message;
+        errorDiv.style.color = 'red';
+        errorDiv.style.fontSize = '12px';
+        errorDiv.style.marginTop = '5px';
+        parent.appendChild(errorDiv);
     }
-
+    
+    /**
+     * Clear error message from an input field
+     * @param {HTMLElement} input - The input to clear errors from
+     */
     function clearError(input) {
-        const errorElement = input.parentElement.querySelector('.error-message');
-        errorElement.textContent = '';
-        input.classList.remove('error');
+        const parent = input.parentElement;
+        const existingError = parent.querySelector('.error-message');
+        
+        if (existingError) {
+            parent.removeChild(existingError);
+        }
+        
+        parent.classList.remove('error');
     }
 
-    document.querySelectorAll('input').forEach(input => {
-        input.addEventListener('input', () => clearError(input));
+    // ===== FORM SUBMISSION HANDLERS =====
+    /**
+     * Handle sign in form submission
+     */
+    signInForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (validateForm(this)) {
+            // Here you would typically send the data to a server
+            console.log('Sign in form submitted successfully');
+            
+            // You can redirect the user or show a success message
+            alert('Sign in successful!');
+        }
+    });
+    
+    /**
+     * Handle sign up form submission
+     */
+    signUpForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (validateForm(this)) {
+            // Here you would typically send the data to a server
+            console.log('Sign up form submitted successfully');
+            
+            // You can redirect the user or show a success message
+            alert('Sign up successful!');
+        }
     });
 });
