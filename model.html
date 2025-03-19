@@ -3,26 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plant Medicinal Value Detection</title>
+    <title>MediPlant | Identify Medicinal Plants</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/modal.css">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
+    <!-- Modern Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
-            <a class="navbar-brand" href="#"><i class="fas fa-leaf me-2"></i>MediPlant Detector</a>
+            <a class="navbar-brand" href="#"><i class="fas fa-leaf me-2"></i>MediPlant</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="#" data-section="detect-section"><i class="fas fa-microscope me-1"></i> Detect Plants</a>
+                    </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#" data-section="detect-section"><i class="fas fa-search me-1"></i> Detect Plants</a>
+                        <a class="nav-link" href="#" data-section="history-section"><i class="fas fa-history me-1"></i> History</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#" data-section="profile-section"><i class="fas fa-user me-1"></i> Profile</a>
@@ -35,27 +39,27 @@
         </div>
     </nav>
 
-    <!-- Main container with sections -->
+    <!-- Main Container with Modern Sections -->
     <div class="container mt-5">
         <!-- Detection Section -->
         <section id="detect-section" class="app-section active">
             <div class="row">
-                <div class="col-md-8 mx-auto text-center">
-                    <h1 class="mb-4">Plant Medicinal Value Detection</h1>
-                    <p class="lead mb-5">Upload a clear image of a plant to identify it and discover its medicinal properties.</p>
+                <div class="col-lg-8 mx-auto text-center">
+                    <h1>Discover Medicinal Plants</h1>
+                    <p class="lead">Upload a clear image of any plant and our AI will identify its medicinal properties and traditional uses.</p>
                 </div>
             </div>
 
             <div class="row">
-                <div class="col-md-6 mx-auto">
+                <div class="col-lg-7 mx-auto">
                     <div class="upload-container" id="upload-container">
                         <div class="upload-area" id="upload-area">
                             <div class="upload-placeholder">
                                 <div class="upload-icon">
                                     <i class="fas fa-leaf"></i>
                                 </div>
-                                <h3>Drag & Drop or Click to Upload</h3>
-                                <p>Supported formats: JPG, PNG (Max 5MB)</p>
+                                <h3>Drop your plant image here</h3>
+                                <p>or click to browse • JPG, PNG (Max 5MB)</p>
                             </div>
                             <div class="upload-preview" id="upload-preview">
                                 <img src="#" alt="Preview" id="preview-img">
@@ -74,8 +78,8 @@
                 </div>
             </div>
 
-            <div class="row mt-5">
-                <div class="col-md-10 mx-auto">
+            <div class="row mt-4">
+                <div class="col-lg-10 mx-auto">
                     <div class="results-container" id="results-container">
                         <!-- Results will be displayed here -->
                     </div>
@@ -83,43 +87,304 @@
             </div>
         </section>
 
-        <!-- Profile Section -->
+        <!-- History Section - New Section -->
+        <section id="history-section" class="app-section">
+            <div class="row">
+                <div class="col-lg-8 mx-auto mb-4 text-center">
+                    <h1>Your Plant History</h1>
+                    <p class="lead">View all the plants you've identified and their medicinal properties</p>
+                </div>
+            </div>
+
+            <div class="row" id="history-items">
+                <!-- Dynamic history items will be added here -->
+                <div class="col-12 text-center empty-state" id="empty-history">
+                    <div class="empty-icon">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <h3 class="mb-3">No Plants Identified Yet</h3>
+                    <p class="mb-4">Start identifying plants to build your history</p>
+                    <button class="btn btn-primary" id="go-to-detect">
+                        <i class="fas fa-microscope me-2"></i>Start Identifying Plants
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Profile Section - Updated -->
         <section id="profile-section" class="app-section">
             <div class="row">
-                <div class="col-md-8 mx-auto">
-                    <h1 class="mb-4">Your Profile</h1>
+                <div class="col-lg-8 mx-auto mb-4">
+                    <h1>Your Profile</h1>
                     
-                    <div class="card profile-card">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center mb-4">
+                    <div class="card profile-card mb-4">
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center">
                                 <div class="profile-avatar">
                                     <i class="fas fa-user"></i>
                                 </div>
                                 <div class="ms-4">
                                     <h3 class="mb-1">User Name</h3>
                                     <p class="mb-0 text-muted">user@example.com</p>
+                                    <button class="btn btn-sm btn-outline-primary mt-2">
+                                        <i class="fas fa-pen me-1"></i> Edit Profile
+                                    </button>
                                 </div>
                             </div>
-                            
-                            <div class="mt-4">
-                                <h5>Account Settings</h5>
-                                <div class="list-group">
-                                    <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                                        <span><i class="fas fa-user-edit me-2"></i> Edit Profile</span>
-                                        <i class="fas fa-chevron-right"></i>
-                                    </a>
-                                    <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                                        <span><i class="fas fa-lock me-2"></i> Change Password</span>
-                                        <i class="fas fa-chevron-right"></i>
-                                    </a>
-                                    <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                                        <span><i class="fas fa-bell me-2"></i> Notification Settings</span>
-                                        <i class="fas fa-chevron-right"></i>
-                                    </a>
-                                    <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                                        <span><i class="fas fa-shield-alt me-2"></i> Privacy Settings</span>
-                                        <i class="fas fa-chevron-right"></i>
-                                    </a>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center p-4">
+                                    <h2 class="stat-value" id="plants-identified">0</h2>
+                                    <p class="stat-label mb-0">Plants Identified</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center p-4">
+                                    <h2 class="stat-value" id="plants-saved">0</h2>
+                                    <p class="stat-label mb-0">Plants Saved</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center p-4">
+                                    <h2 class="stat-value" id="plants-shared">0</h2>
+                                    <p class="stat-label mb-0">Plants Shared</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="m-0">Settings</h3>
+                        </div>
+                        <div class="list-group list-group-flush settings-nav">
+                            <a href="#security-settings" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center settings-nav-item active" data-settings-target="security-settings">
+                                <span><i class="fas fa-lock me-2"></i> Account Security</span>
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                            <a href="#notification-settings" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center settings-nav-item" data-settings-target="notification-settings">
+                                <span><i class="fas fa-bell me-2"></i> Notification Preferences</span>
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                            <a href="#appearance-settings" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center settings-nav-item" data-settings-target="appearance-settings">
+                                <span><i class="fas fa-palette me-2"></i> Appearance</span>
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                            <a href="#help-settings" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center settings-nav-item" data-settings-target="help-settings">
+                                <span><i class="fas fa-question-circle me-2"></i> Help & Support</span>
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Settings Content Panels -->
+                    <div class="card mt-4 settings-panels">
+                        <!-- Security Settings Panel -->
+                        <div id="security-settings" class="settings-panel active">
+                            <div class="card-body">
+                                <h4 class="mb-4">Account Security</h4>
+                                
+                                <form id="security-form">
+                                    <div class="mb-4">
+                                        <label class="form-label">Change Password</label>
+                                        <div class="mb-3">
+                                            <input type="password" class="form-control" placeholder="Current Password">
+                                        </div>
+                                        <div class="mb-3">
+                                            <input type="password" class="form-control" placeholder="New Password">
+                                        </div>
+                                        <div class="mb-3">
+                                            <input type="password" class="form-control" placeholder="Confirm New Password">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        <label class="form-label">Two-Factor Authentication</label>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="two-factor">
+                                            <label class="form-check-label" for="two-factor">Enable two-factor authentication</label>
+                                        </div>
+                                        <small class="text-muted d-block mt-2">Adds an extra layer of security to your account by requiring a verification code.</small>
+                                    </div>
+                                    
+                                    <div class="d-flex justify-content-end">
+                                        <button type="button" class="btn btn-outline-secondary me-2">Cancel</button>
+                                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        
+                        <!-- Notification Settings Panel -->
+                        <div id="notification-settings" class="settings-panel">
+                            <div class="card-body">
+                                <h4 class="mb-4">Notification Preferences</h4>
+                                
+                                <form id="notification-form">
+                                    <div class="mb-4">
+                                        <label class="form-label">Email Notifications</label>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="email-new-features" checked>
+                                            <label class="form-check-label" for="email-new-features">New features and updates</label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="email-tips" checked>
+                                            <label class="form-check-label" for="email-tips">Plant identification tips</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="email-newsletter" checked>
+                                            <label class="form-check-label" for="email-newsletter">Monthly newsletter</label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        <label class="form-label">Browser Notifications</label>
+                                        <div class="form-check form-switch mb-2">
+                                            <input class="form-check-input" type="checkbox" id="browser-notif" checked>
+                                            <label class="form-check-label" for="browser-notif">Enable browser notifications</label>
+                                        </div>
+                                        <small class="text-muted d-block mb-3">Allow the app to send notifications when your analysis is complete.</small>
+                                        
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="notif-sound" checked>
+                                            <label class="form-check-label" for="notif-sound">Play a sound when notifications arrive</label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="d-flex justify-content-end">
+                                        <button type="button" class="btn btn-outline-secondary me-2">Cancel</button>
+                                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        
+                        <!-- Appearance Settings Panel -->
+                        <div id="appearance-settings" class="settings-panel">
+                            <div class="card-body">
+                                <h4 class="mb-4">Appearance</h4>
+                                
+                                <form id="appearance-form">
+                                    <div class="mb-4">
+                                        <label class="form-label">Theme</label>
+                                        <div class="theme-options d-flex gap-3 mb-3">
+                                            <div class="theme-option active">
+                                                <div class="theme-preview light-theme"></div>
+                                                <div class="text-center mt-2">Light</div>
+                                            </div>
+                                            <div class="theme-option">
+                                                <div class="theme-preview dark-theme"></div>
+                                                <div class="text-center mt-2">Dark</div>
+                                            </div>
+                                            <div class="theme-option">
+                                                <div class="theme-preview system-theme"></div>
+                                                <div class="text-center mt-2">System</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        <label class="form-label">Color Accent</label>
+                                        <div class="color-options d-flex gap-3 flex-wrap">
+                                            <div class="color-option active" style="--accent-color: #06D6A0;"></div>
+                                            <div class="color-option" style="--accent-color: #3A86FF;"></div>
+                                            <div class="color-option" style="--accent-color: #8338EC;"></div>
+                                            <div class="color-option" style="--accent-color: #FF006E;"></div>
+                                            <div class="color-option" style="--accent-color: #FB5607;"></div>
+                                            <div class="color-option" style="--accent-color: #FFBE0B;"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        <label class="form-label">Font Size</label>
+                                        <div class="d-flex align-items-center">
+                                            <span class="me-2">A-</span>
+                                            <input type="range" class="form-range" min="1" max="5" step="1" value="3" id="font-size-range">
+                                            <span class="ms-2">A+</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="d-flex justify-content-end">
+                                        <button type="button" class="btn btn-outline-secondary me-2">Cancel</button>
+                                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        
+                        <!-- Help & Support Panel -->
+                        <div id="help-settings" class="settings-panel">
+                            <div class="card-body">
+                                <h4 class="mb-4">Help & Support</h4>
+                                
+                                <div class="mb-4">
+                                    <h5>Frequently Asked Questions</h5>
+                                    <div class="accordion" id="faqAccordion">
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                                    How accurate is the plant identification?
+                                                </button>
+                                            </h2>
+                                            <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                                <div class="accordion-body">
+                                                    Our AI model has been trained on thousands of plant images and can identify most common medicinal plants with 85-95% accuracy. For best results, upload clear images of the plant's leaves, flowers, or distinctive features.
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                                    Is it safe to use identified medicinal plants?
+                                                </button>
+                                            </h2>
+                                            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                                <div class="accordion-body">
+                                                    While our app provides information about plants' medicinal properties, we strongly recommend consulting healthcare professionals before using any plant for medicinal purposes. Always verify plant identification through multiple sources.
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                                    Can I use this offline?
+                                                </button>
+                                            </h2>
+                                            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                                <div class="accordion-body">
+                                                    Currently, MediPlant requires an internet connection to analyze plants as our AI model runs on cloud servers. We're working on a lightweight offline version for future releases.
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <h5>Contact Support</h5>
+                                    <form id="support-form">
+                                        <div class="mb-3">
+                                            <select class="form-select">
+                                                <option selected>Select issue type</option>
+                                                <option>Plant identification issue</option>
+                                                <option>Account problem</option>
+                                                <option>Payment issue</option>
+                                                <option>Feature request</option>
+                                                <option>Other</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <textarea class="form-control" placeholder="Describe your issue or question" rows="4"></textarea>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Submit Request</button>
+                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -129,20 +394,42 @@
         </section>
     </div>
 
+    <!-- Modern Loading Overlay -->
     <div class="loading-overlay" id="loading-overlay">
         <div class="loader">
             <div class="spinner"></div>
         </div>
-        <p>Analyzing plant image...</p>
+        <p>Analyzing your plant...</p>
     </div>
 
-    <footer class="mt-5 py-4">
-        <div class="container text-center">
-            <p><i class="fas fa-seedling me-2"></i>© 2023 MediPlant Detector</p>
-            <div class="social-icons">
-                <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
-                <a href="#" class="social-icon"><i class="fab fa-facebook"></i></a>
-                <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+    <!-- Modern Footer -->
+    <footer class="mt-5">
+        <div class="container">
+            <div class="row py-4">
+                <div class="col-lg-6">
+                    <h4 class="text-white mb-3"><i class="fas fa-leaf me-2"></i>MediPlant</h4>
+                    <p class="mb-0">Discover the healing power of plants with our advanced AI recognition technology.</p>
+                </div>
+                <div class="col-lg-3">
+                    <h5 class="text-white mb-3">Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white-50">About Us</a></li>
+                        <li><a href="#" class="text-white-50">Privacy Policy</a></li>
+                        <li><a href="#" class="text-white-50">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3">
+                    <h5 class="text-white mb-3">Connect</h5>
+                    <div class="social-icons">
+                        <a href="#" class="social-icon text-white"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-icon text-white"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon text-white"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-icon text-white"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-top border-secondary pt-3">
+                <p class="text-center text-white-50 small mb-0">© 2023 MediPlant. All rights reserved.</p>
             </div>
         </div>
     </footer>
