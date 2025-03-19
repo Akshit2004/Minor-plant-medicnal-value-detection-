@@ -32,8 +32,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (user) {
             // User is signed in
             console.log('User is signed in:', user.email);
-            // Redirect to main app page or update UI
-            // window.location.href = 'dashboard.html'; // Uncomment when dashboard is ready
+            // Redirect to main app page
+            window.location.href = 'model.html'; // Uncommented and updated to model.html
         } else {
             // User is signed out
             console.log('No user is signed in');
@@ -158,7 +158,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Signed in
                     const user = userCredential.user;
                     console.log('User signed in:', user.email);
-                    // Success message or redirect
+                    // Redirect to model.html
+                    window.location.href = 'model.html';
                 })
                 .catch((error) => {
                     const errorCode = error.code;
@@ -285,7 +286,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 }, { merge: true });
             })
             .then(() => {
-                // Redirect or update UI
+                // Redirect to model.html
+                window.location.href = 'model.html';
             })
             .catch((error) => {
                 console.error(`${provider.providerId} sign in error:`, error);
