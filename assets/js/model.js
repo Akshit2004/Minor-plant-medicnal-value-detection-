@@ -1,4 +1,31 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Firebase
+    const firebaseConfig = {
+        // Your Firebase config here
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_AUTH_DOMAIN",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_STORAGE_BUCKET",
+        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+        appId: "YOUR_APP_ID"
+    };
+    
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    
+    // Initialize Firestore
+    const db = firebase.firestore();
+    
+    // Get current user
+    const getCurrentUser = () => {
+        return new Promise((resolve, reject) => {
+            const unsubscribe = firebase.auth().onAuthStateChanged(user => {
+                unsubscribe();
+                resolve(user);
+            }, reject);
+        });
+    };
+    
     // Essential DOM Elements
     const uploadArea = document.getElementById('upload-area');
     const fileInput = document.getElementById('file-input');
@@ -19,6 +46,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initAppearanceSettings();
     initSettingsTabs();
     loadUserPreferences();
+    fetchUserProfile(); // Fetch user profile data from Firestore
     
     // Add event listeners
     uploadArea.addEventListener('click', () => fileInput.click());
@@ -605,5 +633,267 @@ document.addEventListener('DOMContentLoaded', function() {
             document.querySelector('[data-section="detect-section"]').parentElement.classList.add('active');
             displayResults(data);
         });
+        
+        // Update plants identified count in Firestore
+        updatePlantStats();
     }
+
+    // Fetch the user's profile data from Firestore
+    async function fetchUserProfile() {
+        try {
+            // Show loading indicator in profile section
+            const profileSection = document.querySelector('#profile-section .profile-card');
+            if (profileSection) {
+                profileSection.classList.add('loading');
+            }
+            
+            // Get current authenticated user
+            const user = await getCurrentUser();
+            
+            if (!user) {
+                showNotification('You must be logged in to view profile', 'error');
+                return;
+            }
+            
+            // Fetch user data from Firestore
+            const userDoc = await db.collection('users').doc(user.uid).get();
+            
+            let userData;
+            
+            if (userDoc.exists) {
+                // Get user data from Firestore
+                userData = userDoc.data();
+            } else {
+                // Create a new user document if it doesn't exist
+                userData = {
+                    username: user.displayName || 'User',
+                    email: user.email,
+                    joinDate: new Date().toISOString(),
+                    plantsIdentified: 0,
+                    plantsSaved: 0,
+                    plantsShared: 0,
+                    profileImage: user.photoURL || null
+                };
+                
+                // Save the new user to Firestore
+                await db.collection('users').doc(user.uid).set(userData);
+            }
+            
+            // Update UI with user data
+            updateProfileUI(userData);
+            
+        } catch (error) {
+            console.error('Error fetching user profile:', error);
+            showNotification('Failed to load profile data', 'error');
+        } finally {
+            // Remove loading state
+            const profileSection = document.querySelector('#profile-section .profile-card');
+            if (profileSection) {
+                profileSection.classList.remove('loading');
+            }
+        }
+    }
+
+    // Update the profile UI with user data
+    function updateProfileUI(userData) {
+        // Update username and email
+        const profileName = document.getElementById('profile-name');
+        const profileEmail = document.getElementById('profile-email');
+        
+        if (profileName) {
+            profileName.textContent = userData.username;
+        }
+        
+        if (profileEmail) {
+            profileEmail.textContent = userData.email;
+        }
+        
+        // Update stats counts
+        const plantsIdentified = document.getElementById('plants-identified');
+        const plantsSaved = document.getElementById('plants-saved');
+        const plantsShared = document.getElementById('plants-shared');
+        
+        if (plantsIdentified) {
+            plantsIdentified.textContent = userData.plantsIdentified || 0;
+        }
+        
+        if (plantsSaved) {
+            plantsSaved.textContent = userData.plantsSaved || 0;
+        }
+        
+        if (plantsShared) {
+            plantsShared.textContent = userData.plantsShared || 0;
+        }
+        
+        // Update profile image if available
+        const profileAvatar = document.querySelector('.profile-avatar');
+        if (profileAvatar && userData.profileImage) {
+            profileAvatar.innerHTML = `<img src="${userData.profileImage}" alt="${userData.username}" class="profile-img">`;
+        }
+        
+        // Set values in edit form
+        const editNameInput = document.getElementById('edit-name');
+        const editEmailInput = document.getElementById('edit-email');
+        
+        if (editNameInput) {
+            editNameInput.value = userData.username;
+        }
+        
+        if (editEmailInput) {
+            editEmailInput.value = userData.email;
+        }
+    }
+    
+    // Initialize profile edit functionality with Firestore updates
+    function initProfileEdit() {
+        const editProfileBtn = document.getElementById('edit-profile-btn');
+        const profileForm = document.getElementById('profile-form');
+        const profileDisplay = document.getElementById('profile-display');
+        const cancelEditBtn = document.getElementById('cancel-profile-edit');
+        
+        if (editProfileBtn) {
+            editProfileBtn.addEventListener('click', function() {
+                // Show edit form
+                if (profileForm) profileForm.classList.add('active');
+                if (profileDisplay) profileDisplay.classList.add('hidden');
+            });
+        }
+        
+        if (cancelEditBtn) {
+            cancelEditBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                // Hide edit form and reset to original values
+                if (profileForm) profileForm.classList.remove('active');
+                if (profileDisplay) profileDisplay.classList.remove('hidden');
+                fetchUserProfile(); // Refetch to discard changes
+            });
+        }
+        
+        // Handle profile form submission with Firestore update
+        const saveProfileForm = document.getElementById('save-profile-form');
+        if (saveProfileForm) {
+            saveProfileForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const nameInput = document.getElementById('edit-name');
+                const emailInput = document.getElementById('edit-email');
+                const profileImageInput = document.getElementById('profile-image-upload');
+                
+                // Simple validation
+                if (!nameInput.value.trim()) {
+                    showNotification('Name cannot be empty', 'error');
+                    return;
+                }
+                
+                if (!emailInput.value.trim() || !isValidEmail(emailInput.value)) {
+                    showNotification('Please enter a valid email', 'error');
+                    return;
+                }
+                
+                try {
+                    // Show loading indicator
+                    const profileSection = document.querySelector('#profile-section .profile-card');
+                    if (profileSection) {
+                        profileSection.classList.add('loading');
+                    }
+                    
+                    // Get current authenticated user
+                    const user = await getCurrentUser();
+                    
+                    if (!user) {
+                        showNotification('You must be logged in to update profile', 'error');
+                        return;
+                    }
+                    
+                    let profileImageData = null;
+                    
+                    // Process profile image if one was selected
+                    if (profileImageInput.files.length > 0) {
+                        const file = profileImageInput.files[0];
+                        profileImageData = await readFileAsDataURL(file);
+                        
+                        // In a real app, you would upload this to Firebase Storage
+                        // and get a public URL instead of storing as data URL
+                    }
+                    
+                    // Update data to send to Firestore
+                    const updatedData = {
+                        username: nameInput.value.trim(),
+                        email: emailInput.value.trim(),
+                    };
+                    
+                    if (profileImageData) {
+                        updatedData.profileImage = profileImageData;
+                    }
+                    
+                    // Update user profile in Firestore
+                    await db.collection('users').doc(user.uid).update(updatedData);
+                    
+                    // Update Firebase auth user profile if email or name changed
+                    if (user.email !== updatedData.email) {
+                        await user.updateEmail(updatedData.email);
+                    }
+                    
+                    if (user.displayName !== updatedData.username) {
+                        await user.updateProfile({
+                            displayName: updatedData.username
+                        });
+                    }
+                    
+                    // Hide edit form
+                    if (profileForm) profileForm.classList.remove('active');
+                    if (profileDisplay) profileDisplay.classList.remove('hidden');
+                    
+                    // Refetch user data to update UI
+                    fetchUserProfile();
+                    
+                    showNotification('Profile updated successfully', 'success');
+                    
+                } catch (error) {
+                    console.error('Error updating profile:', error);
+                    showNotification('Failed to update profile: ' + error.message, 'error');
+                } finally {
+                    // Remove loading state
+                    const profileSection = document.querySelector('#profile-section .profile-card');
+                    if (profileSection) {
+                        profileSection.classList.remove('loading');
+                    }
+                }
+            });
+        }
+    }
+    
+    // Update plant identification stats in Firestore
+    async function updatePlantStats() {
+        try {
+            const user = await getCurrentUser();
+            if (user) {
+                // Increment the plantsIdentified field using Firestore atomic operation
+                await db.collection('users').doc(user.uid).update({
+                    plantsIdentified: firebase.firestore.FieldValue.increment(1)
+                });
+            }
+        } catch (error) {
+            console.error('Error updating plant stats:', error);
+        }
+    }
+    
+    // Read file as data URL (for profile image)
+    function readFileAsDataURL(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = e => resolve(e.target.result);
+            reader.onerror = error => reject(error);
+            reader.readAsDataURL(file);
+        });
+    }
+    
+    // Email validation function
+    function isValidEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+    
+    // Call the function to initialize profile edit functionality
+    initProfileEdit();
 });
