@@ -4,6 +4,11 @@
  */
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Add this at the beginning of your DOMContentLoaded function for debugging
+    console.log("Firebase SDK version:", firebase.SDK_VERSION);
+    console.log("Firebase auth available:", !!firebase.auth);
+    console.log("Firebase firestore available:", !!firebase.firestore);
+
     // ===== DOM ELEMENTS =====
     const sign_in_btn = document.querySelector("#sign-in-btn");
     const sign_up_btn = document.querySelector("#sign-up-btn");
@@ -181,7 +186,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     /**
-     * Handle sign up form submission using Firebase
+     * Handle sign up form submission using Firebase - with debugging
      */
     signUpForm.addEventListener('submit', function(e) {
         e.preventDefault();
@@ -191,6 +196,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const email = this.querySelector('input[type="email"]').value;
             const password = this.querySelector('input[type="password"]').value;
             
+            console.log("Sign-up attempt with:", {username, email, password: "***"});
+            
             // Show loading indicator
             loadingOverlay.classList.remove('hidden');
             
@@ -199,32 +206,53 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then((userCredential) => {
                     // Signed up
                     const user = userCredential.user;
-                    console.log('User created:', user.email);
+                    const uid = user.uid;
+                    console.log('User created successfully with ID:', uid);
                     
                     // Update profile with username
+                    console.log('Updating user profile with username:', username);
                     return user.updateProfile({
                         displayName: username
                     }).then(() => {
-                        // Save additional user data to Firestore
-                        return firebase.firestore().collection('users').doc(user.uid).set({
+                        console.log('Profile updated successfully');
+                        console.log('Attempting to save to Firestore...');
+                        // Save user data to Firestore with error handling
+                        const db = firebase.firestore();
+                        if (!db) {
+                            throw new Error("Firestore is not initialized properly");
+                        }
+                        
+                        // Create user document
+                        return db.collection('users').doc(uid).set({
                             username: username,
                             email: email,
-                            createdAt: new Date()
+                            createdAt: new Date(),
+                            lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                        })
+                        .catch(firestoreError => {
+                            console.error("Firestore specific error:", firestoreError);
+                            throw firestoreError; // Re-throw to be caught by the outer catch
                         });
                     });
                 })
                 .then(() => {
+                    console.log('Firestore document created successfully');
                     alert('Account created successfully!');
-                    // Redirect or update UI
+                    // Redirect to model page after successful signup
+                    window.location.href = 'model.html';
                 })
                 .catch((error) => {
                     const errorCode = error.code;
                     const errorMessage = error.message;
-                    console.error('Sign up error:', errorCode, errorMessage);
+                    console.error('Sign up error details:', {errorCode, errorMessage, fullError: error});
                     
                     // Show error based on Firebase error code
                     if (errorCode === 'auth/email-already-in-use') {
                         alert('This email is already in use');
+                    } else if (errorCode === 'auth/invalid-email') {
+                        alert('Invalid email format');
+                    } else if (errorCode === 'auth/weak-password') {
+                        alert('Password is too weak');
                     } else {
                         alert(`Error: ${errorMessage}`);
                     }
