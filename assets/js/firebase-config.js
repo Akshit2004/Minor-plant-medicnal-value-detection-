@@ -1,21 +1,27 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-app.js";
-import { 
-    getAuth, 
-    GoogleAuthProvider, 
-    GithubAuthProvider 
-} from "https://www.gstatic.com/firebasejs/11.3.0/firebase-auth.js";
+/**
+ * Firebase Configuration for Plant Medicine Detection App
+ */
 
+// Firebase configuration object with your actual project settings
 const firebaseConfig = {
-    apiKey: "AIzaSyCL1Yj-D4RxAiiHWL9V4-nn0COiSnlkhhc",
-    authDomain: "pmvd-cb8e8.firebaseapp.com",
-    projectId: "pmvd-cb8e8",
-    storageBucket: "pmvd-cb8e8.firebasestorage.app",
-    messagingSenderId: "215614631261",
-    appId: "1:215614631261:web:89e0edeb19e5a5c141ccb4",
-    measurementId: "G-FTP0H4H131"
+  apiKey: "AIzaSyB78uOs4cHHGps791lwcwVUPZuclZG2k-E",
+  authDomain: "pmvd-984e4.firebaseapp.com",
+  projectId: "pmvd-984e4",
+  storageBucket: "pmvd-984e4.firebasestorage.app",
+  messagingSenderId: "405723657287",
+  appId: "1:405723657287:web:c9d44cbbf48f9a5225ad62",
+  measurementId: "G-4HZV4CCF9K"
 };
 
-const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-export const googleProvider = new GoogleAuthProvider();
-export const githubProvider = new GithubAuthProvider();
+// Initialize Firebase with compat version (matches the script imports in HTML)
+firebase.initializeApp(firebaseConfig);
+
+// Export commonly used Firebase services
+const auth = firebase.auth();
+const db = firebase.firestore();
+const analytics = firebase.analytics();
+
+// For easier debugging during development
+if (window.location.hostname === "localhost") {
+  console.log("Firebase initialized in development mode");
+}

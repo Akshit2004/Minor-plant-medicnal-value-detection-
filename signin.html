@@ -44,17 +44,11 @@
                     
                     <!-- Social Media Icons -->
                     <div class="social-media">
-                        <a href="#" class="social-icon">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="#" class="social-icon">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" class="social-icon">
+                        <a href="#" class="social-icon" id="google-login">
                             <i class="fab fa-google"></i>
                         </a>
-                        <a href="#" class="social-icon">
-                            <i class="fab fa-linkedin-in"></i>
+                        <a href="#" class="social-icon" id="github-login">
+                            <i class="fab fa-github"></i>
                         </a>
                     </div>
                 </form>
@@ -79,17 +73,11 @@
                     
                     <!-- Social Media Icons -->
                     <div class="social-media">
-                        <a href="#" class="social-icon">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="#" class="social-icon">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" class="social-icon">
+                        <a href="#" class="social-icon" id="google-signup">
                             <i class="fab fa-google"></i>
                         </a>
-                        <a href="#" class="social-icon">
-                            <i class="fab fa-linkedin-in"></i>
+                        <a href="#" class="social-icon" id="github-signup">
+                            <i class="fab fa-github"></i>
                         </a>
                     </div>
                 </form>
@@ -116,6 +104,15 @@
             </div>
         </div>
     </div>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-analytics-compat.js"></script>
+    
+    <!-- Firebase Configuration -->
+    <script src="assets/js/firebase-config.js"></script>
     
     <!-- Scripts -->
     <script src="assets/js/login.js"></script>

@@ -1,6 +1,6 @@
 /**
  * Plant Medicine Detection Login System
- * Handles login/signup toggle functionality and form validation
+ * Firebase Authentication Implementation
  */
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -26,6 +26,19 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.classList.add('page-loaded');
         loadingOverlay.classList.add('hidden');
     }, 1500);
+
+    // ===== FIREBASE AUTH STATE LISTENER =====
+    firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+            // User is signed in
+            console.log('User is signed in:', user.email);
+            // Redirect to main app page or update UI
+            // window.location.href = 'dashboard.html'; // Uncomment when dashboard is ready
+        } else {
+            // User is signed out
+            console.log('No user is signed in');
+        }
+    });
 
     // ===== TOGGLE FUNCTIONALITY =====
     /**
@@ -127,32 +140,160 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ===== FORM SUBMISSION HANDLERS =====
     /**
-     * Handle sign in form submission
+     * Handle sign in form submission using Firebase
      */
     signInForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
         if (validateForm(this)) {
-            // Here you would typically send the data to a server
-            console.log('Sign in form submitted successfully');
+            const email = this.querySelector('input[type="text"]').value;
+            const password = this.querySelector('input[type="password"]').value;
             
-            // You can redirect the user or show a success message
-            alert('Sign in successful!');
+            // Show loading indicator
+            loadingOverlay.classList.remove('hidden');
+            
+            // Sign in with Firebase
+            firebase.auth().signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Signed in
+                    const user = userCredential.user;
+                    console.log('User signed in:', user.email);
+                    // Success message or redirect
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    console.error('Sign in error:', errorCode, errorMessage);
+                    
+                    // Show error based on Firebase error code
+                    if (errorCode === 'auth/wrong-password' || errorCode === 'auth/user-not-found') {
+                        alert('Invalid email or password');
+                    } else {
+                        alert(`Error: ${errorMessage}`);
+                    }
+                })
+                .finally(() => {
+                    // Hide loading indicator
+                    loadingOverlay.classList.add('hidden');
+                });
         }
     });
     
     /**
-     * Handle sign up form submission
+     * Handle sign up form submission using Firebase
      */
     signUpForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
         if (validateForm(this)) {
-            // Here you would typically send the data to a server
-            console.log('Sign up form submitted successfully');
+            const username = this.querySelector('input[type="text"]').value;
+            const email = this.querySelector('input[type="email"]').value;
+            const password = this.querySelector('input[type="password"]').value;
             
-            // You can redirect the user or show a success message
-            alert('Sign up successful!');
+            // Show loading indicator
+            loadingOverlay.classList.remove('hidden');
+            
+            // Create user with Firebase
+            firebase.auth().createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Signed up
+                    const user = userCredential.user;
+                    console.log('User created:', user.email);
+                    
+                    // Update profile with username
+                    return user.updateProfile({
+                        displayName: username
+                    }).then(() => {
+                        // Save additional user data to Firestore
+                        return firebase.firestore().collection('users').doc(user.uid).set({
+                            username: username,
+                            email: email,
+                            createdAt: new Date()
+                        });
+                    });
+                })
+                .then(() => {
+                    alert('Account created successfully!');
+                    // Redirect or update UI
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    console.error('Sign up error:', errorCode, errorMessage);
+                    
+                    // Show error based on Firebase error code
+                    if (errorCode === 'auth/email-already-in-use') {
+                        alert('This email is already in use');
+                    } else {
+                        alert(`Error: ${errorMessage}`);
+                    }
+                })
+                .finally(() => {
+                    // Hide loading indicator
+                    loadingOverlay.classList.add('hidden');
+                });
         }
     });
+    
+    // ===== SOCIAL SIGN IN =====
+    /**
+     * Sign in with Google using Firebase
+     */
+    document.getElementById('google-login').addEventListener('click', function(e) {
+        e.preventDefault();
+        signInWithProvider(new firebase.auth.GoogleAuthProvider());
+    });
+
+    document.getElementById('google-signup').addEventListener('click', function(e) {
+        e.preventDefault();
+        signInWithProvider(new firebase.auth.GoogleAuthProvider());
+    });
+
+    /**
+     * Sign in with GitHub using Firebase
+     */
+    document.getElementById('github-login').addEventListener('click', function(e) {
+        e.preventDefault();
+        signInWithProvider(new firebase.auth.GithubAuthProvider());
+    });
+
+    document.getElementById('github-signup').addEventListener('click', function(e) {
+        e.preventDefault();
+        signInWithProvider(new firebase.auth.GithubAuthProvider());
+    });
+
+    /**
+     * Generic function to handle provider sign in
+     * @param {firebase.auth.AuthProvider} provider - The auth provider to use
+     */
+    function signInWithProvider(provider) {
+        // Show loading indicator
+        loadingOverlay.classList.remove('hidden');
+        
+        firebase.auth().signInWithPopup(provider)
+            .then((result) => {
+                console.log(`${provider.providerId} sign in successful`);
+                const user = result.user;
+                
+                // Create or update user in Firestore
+                return firebase.firestore().collection('users').doc(user.uid).set({
+                    displayName: user.displayName,
+                    email: user.email,
+                    photoURL: user.photoURL,
+                    lastLogin: new Date(),
+                    provider: provider.providerId
+                }, { merge: true });
+            })
+            .then(() => {
+                // Redirect or update UI
+            })
+            .catch((error) => {
+                console.error(`${provider.providerId} sign in error:`, error);
+                alert(`${provider.providerId} sign in failed. ${error.message}`);
+            })
+            .finally(() => {
+                // Hide loading indicator
+                loadingOverlay.classList.add('hidden');
+            });
+    }
 });
