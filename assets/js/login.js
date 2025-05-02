@@ -37,8 +37,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (user) {
             // User is signed in
             console.log('User is signed in:', user.email);
-            // Redirect to main app page
-            window.location.href = 'model.html'; // Uncommented and updated to model.html
+            // Do NOT auto-redirect on signin page; show the form instead
+            // If you want to redirect, uncomment the next line:
+            // window.location.href = 'model.html';
         } else {
             // User is signed out
             console.log('No user is signed in');
@@ -143,6 +144,17 @@ document.addEventListener('DOMContentLoaded', function() {
         parent.classList.remove('error');
     }
 
+    // Utility to show popup notification
+    function showPopupNotification(message) {
+        const popup = document.getElementById('popup-notification');
+        if (!popup) return;
+        popup.textContent = message;
+        popup.classList.add('show');
+        setTimeout(() => {
+            popup.classList.remove('show');
+        }, 3000);
+    }
+
     // ===== FORM SUBMISSION HANDLERS =====
     /**
      * Handle sign in form submission using Firebase
@@ -173,9 +185,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     // Show error based on Firebase error code
                     if (errorCode === 'auth/wrong-password' || errorCode === 'auth/user-not-found') {
-                        alert('Invalid email or password');
+                        showPopupNotification('Invalid email or password');
                     } else {
-                        alert(`Error: ${errorMessage}`);
+                        showPopupNotification(`Error: ${errorMessage}`);
                     }
                 })
                 .finally(() => {
